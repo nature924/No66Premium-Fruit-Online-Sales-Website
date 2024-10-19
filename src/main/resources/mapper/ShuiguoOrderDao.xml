@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShuiguoOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shuiguo_order_uuid_number as shuiguoOrderUuidNumber
+        ,a.address_id as addressId
+        ,a.shuiguo_id as shuiguoId
+        ,a.yonghu_id as yonghuId
+        ,a.buy_number as buyNumber
+        ,a.shuiguo_order_true_price as shuiguoOrderTruePrice
+        ,a.shuiguo_order_courier_name as shuiguoOrderCourierName
+        ,a.shuiguo_order_courier_number as shuiguoOrderCourierNumber
+        ,a.shuiguo_order_types as shuiguoOrderTypes
+        ,a.shuiguo_order_payment_types as shuiguoOrderPaymentTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShuiguoOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,address.yonghu_id as addressYonghuId
+        ,address.address_name as addressName
+        ,address.address_phone as addressPhone
+        ,address.address_dizhi as addressDizhi
+        ,address.isdefault_types as isdefaultTypes
+        ,shuiguo.shangjia_id as shuiguoShangjiaId
+        ,shuiguo.shuiguo_name as shuiguoName
+        ,shuiguo.shuiguo_uuid_number as shuiguoUuidNumber
+        ,shuiguo.shuiguo_photo as shuiguoPhoto
+        ,shuiguo.shuiguo_types as shuiguoTypes
+        ,shuiguo.shuiguo_erji_types as shuiguoErjiTypes
+        ,shuiguo.tuijian_types as tuijianTypes
+        ,shuiguo.tejia_types as tejiaTypes
+        ,shuiguo.jinkou_types as jinkouTypes
+        ,shuiguo.shuiguo_kucun_number as shuiguoKucunNumber
+        ,shuiguo.shuiguo_old_money as shuiguoOldMoney
+        ,shuiguo.shuiguo_new_money as shuiguoNewMoney
+        ,shuiguo.shuiguo_clicknum as shuiguoClicknum
+        ,shuiguo.shuiguo_content as shuiguoContent
+        ,shuiguo.shangxia_types as shangxiaTypes
+        ,shuiguo.shuiguo_delete as shuiguoDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+
+        FROM shuiguo_order  a
+        left JOIN address address ON a.address_id = address.id
+        left JOIN shuiguo shuiguo ON a.shuiguo_id = shuiguo.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.shuiguoOrderUuidNumber != '' and params.shuiguoOrderUuidNumber != null and params.shuiguoOrderUuidNumber != 'null' ">
+                and a.shuiguo_order_uuid_number like CONCAT('%',#{params.shuiguoOrderUuidNumber},'%')
+            </if>
+            <if test="params.addressId != null and params.addressId != ''">
+                and (
+                    a.address_id = #{params.addressId}
+                )
+            </if>
+            <if test="params.shuiguoId != null and params.shuiguoId != ''">
+                and (
+                    a.shuiguo_id = #{params.shuiguoId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.buyNumberStart != null and params.buyNumberStart != ''">
+                <![CDATA[  and a.buy_number >= #{params.buyNumberStart}   ]]>
+            </if>
+            <if test="params.buyNumberEnd != null and params.buyNumberEnd != ''">
+                <![CDATA[  and a.buy_number <= #{params.buyNumberEnd}   ]]>
+            </if>
+             <if test="params.buyNumber != null and params.buyNumber != ''">
+                and a.buy_number = #{params.buyNumber}
+             </if>
+            <if test="params.shuiguoOrderTruePriceStart != null ">
+                <![CDATA[  and a.shuiguo_order_true_price >= #{params.shuiguoOrderTruePriceStart}   ]]>
+            </if>
+            <if test="params.shuiguoOrderTruePriceEnd != null ">
+                <![CDATA[  and a.shuiguo_order_true_price <= #{params.shuiguoOrderTruePriceEnd}   ]]>
+            </if>
+            <if test=" params.shuiguoOrderCourierName != '' and params.shuiguoOrderCourierName != null and params.shuiguoOrderCourierName != 'null' ">
+                and a.shuiguo_order_courier_name like CONCAT('%',#{params.shuiguoOrderCourierName},'%')
+            </if>
+            <if test=" params.shuiguoOrderCourierNumber != '' and params.shuiguoOrderCourierNumber != null and params.shuiguoOrderCourierNumber != 'null' ">
+                and a.shuiguo_order_courier_number like CONCAT('%',#{params.shuiguoOrderCourierNumber},'%')
+            </if>
+            <if test="params.shuiguoOrderTypes != null and params.shuiguoOrderTypes != ''">
+                and a.shuiguo_order_types = #{params.shuiguoOrderTypes}
+            </if>
+            <if test="params.shuiguoOrderPaymentTypes != null and params.shuiguoOrderPaymentTypes != ''">
+                and a.shuiguo_order_payment_types = #{params.shuiguoOrderPaymentTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断收货地址的id不为空 -->
+            <if test=" params.addressIdNotNull != '' and params.addressIdNotNull != null and params.addressIdNotNull != 'null' ">
+                and a.address_id IS NOT NULL
+            </if>
+            <if test=" params.addressName != '' and params.addressName != null and params.addressName != 'null' ">
+                and address.address_name like CONCAT('%',#{params.addressName},'%')
+            </if>
+            <if test=" params.addressPhone != '' and params.addressPhone != null and params.addressPhone != 'null' ">
+                and address.address_phone like CONCAT('%',#{params.addressPhone},'%')
+            </if>
+            <if test=" params.addressDizhi != '' and params.addressDizhi != null and params.addressDizhi != 'null' ">
+                and address.address_dizhi like CONCAT('%',#{params.addressDizhi},'%')
+            </if>
+            <if test="params.isdefaultTypes != null  and params.isdefaultTypes != ''">
+                and address.isdefault_types = #{params.isdefaultTypes}
+            </if>
+
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(address.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(address.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(address.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(address.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+                <!-- 判断水果的id不为空 -->
+            <if test=" params.shuiguoIdNotNull != '' and params.shuiguoIdNotNull != null and params.shuiguoIdNotNull != 'null' ">
+                and a.shuiguo_id IS NOT NULL
+            </if>
+            <if test="params.shangjiaId != null  and params.shangjiaId != ''">
+                and shuiguo.shangjia_id = #{params.shangjiaId}
+            </if>
+            <if test=" params.shuiguoName != '' and params.shuiguoName != null and params.shuiguoName != 'null' ">
+                and shuiguo.shuiguo_name like CONCAT('%',#{params.shuiguoName},'%')
+            </if>
+            <if test=" params.shuiguoUuidNumber != '' and params.shuiguoUuidNumber != null and params.shuiguoUuidNumber != 'null' ">
+                and shuiguo.shuiguo_uuid_number like CONCAT('%',#{params.shuiguoUuidNumber},'%')
+            </if>
+            <if test="params.shuiguoTypes != null  and params.shuiguoTypes != ''">
+                and shuiguo.shuiguo_types = #{params.shuiguoTypes}
+            </if>
+
+            <if test="params.shuiguoErjiTypes != null  and params.shuiguoErjiTypes != ''">
+                and shuiguo.shuiguo_erji_types = #{params.shuiguoErjiTypes}
+            </if>
+
+            <if test="params.tuijianTypes != null  and params.tuijianTypes != ''">
+                and shuiguo.tuijian_types = #{params.tuijianTypes}
+            </if>
+
+            <if test="params.tejiaTypes != null  and params.tejiaTypes != ''">
+                and shuiguo.tejia_types = #{params.tejiaTypes}
+            </if>
+
+            <if test="params.jinkouTypes != null  and params.jinkouTypes != ''">
+                and shuiguo.jinkou_types = #{params.jinkouTypes}
+            </if>
+
+            <if test="params.shuiguoKucunNumberStart != null  and params.shuiguoKucunNumberStart != '' ">
+                <![CDATA[  and shuiguo.shuiguo_kucun_number >= #{params.shuiguoKucunNumberStart}   ]]>
+            </if>
+            <if test="params.shuiguoKucunNumberEnd != null  and params.shuiguoKucunNumberEnd != '' ">
+                <![CDATA[  and shuiguo.shuiguo_kucun_number <= #{params.shuiguoKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.shuiguoKucunNumber != null  and params.shuiguoKucunNumber != '' ">
+                and shuiguo.shuiguo_kucun_number = #{params.shuiguoKucunNumber}
+            </if>
+            <if test="params.shuiguoOldMoneyStart != null ">
+                <![CDATA[  and shuiguo.shuiguo_old_money >= #{params.shuiguoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.shuiguoOldMoneyEnd != null ">
+                <![CDATA[  and shuiguo.shuiguo_old_money <= #{params.shuiguoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.shuiguoNewMoneyStart != null ">
+                <![CDATA[  and shuiguo.shuiguo_new_money >= #{params.shuiguoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.shuiguoNewMoneyEnd != null ">
+                <![CDATA[  and shuiguo.shuiguo_new_money <= #{params.shuiguoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.shuiguoClicknumStart != null  and params.shuiguoClicknumStart != '' ">
+                <![CDATA[  and shuiguo.shuiguo_clicknum >= #{params.shuiguoClicknumStart}   ]]>
+            </if>
+            <if test="params.shuiguoClicknumEnd != null  and params.shuiguoClicknumEnd != '' ">
+                <![CDATA[  and shuiguo.shuiguo_clicknum <= #{params.shuiguoClicknumEnd}   ]]>
+            </if>
+            <if test="params.shuiguoClicknum != null  and params.shuiguoClicknum != '' ">
+                and shuiguo.shuiguo_clicknum = #{params.shuiguoClicknum}
+            </if>
+            <if test=" params.shuiguoContent != '' and params.shuiguoContent != null and params.shuiguoContent != 'null' ">
+                and shuiguo.shuiguo_content like CONCAT('%',#{params.shuiguoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and shuiguo.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.shuiguoDeleteStart != null  and params.shuiguoDeleteStart != '' ">
+                <![CDATA[  and shuiguo.shuiguo_delete >= #{params.shuiguoDeleteStart}   ]]>
+            </if>
+            <if test="params.shuiguoDeleteEnd != null  and params.shuiguoDeleteEnd != '' ">
+                <![CDATA[  and shuiguo.shuiguo_delete <= #{params.shuiguoDeleteEnd}   ]]>
+            </if>
+            <if test="params.shuiguoDelete != null  and params.shuiguoDelete != '' ">
+                and shuiguo.shuiguo_delete = #{params.shuiguoDelete}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

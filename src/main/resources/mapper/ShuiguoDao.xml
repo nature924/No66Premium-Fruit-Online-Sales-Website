@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShuiguoDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shangjia_id as shangjiaId
+        ,a.shuiguo_name as shuiguoName
+        ,a.shuiguo_uuid_number as shuiguoUuidNumber
+        ,a.shuiguo_photo as shuiguoPhoto
+        ,a.shuiguo_types as shuiguoTypes
+        ,a.shuiguo_erji_types as shuiguoErjiTypes
+        ,a.tuijian_types as tuijianTypes
+        ,a.tejia_types as tejiaTypes
+        ,a.jinkou_types as jinkouTypes
+        ,a.shuiguo_kucun_number as shuiguoKucunNumber
+        ,a.shuiguo_old_money as shuiguoOldMoney
+        ,a.shuiguo_new_money as shuiguoNewMoney
+        ,a.shuiguo_clicknum as shuiguoClicknum
+        ,a.shuiguo_content as shuiguoContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.shuiguo_delete as shuiguoDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShuiguoView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,shangjia.shangjia_name as shangjiaName
+        ,shangjia.shangjia_phone as shangjiaPhone
+        ,shangjia.shangjia_email as shangjiaEmail
+        ,shangjia.shangjia_photo as shangjiaPhoto
+        ,shangjia.shangjia_xingji_types as shangjiaXingjiTypes
+        ,shangjia.new_money as newMoney
+        ,shangjia.shangjia_content as shangjiaContent
+        ,shangjia.shangjia_yesno_types as shangjiaYesnoTypes
+        ,shangjia.shangjia_yesno_text as shangjiaYesnoText
+        ,shangjia.shangjia_shenhe_time as shangjiaShenheTime
+        ,shangjia.shangjia_delete as shangjiaDelete
+
+        FROM shuiguo  a
+        left JOIN shangjia shangjia ON a.shangjia_id = shangjia.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.shangjiaId != null and params.shangjiaId != ''">
+                and (
+                    a.shangjia_id = #{params.shangjiaId}
+                )
+            </if>
+            <if test=" params.shuiguoName != '' and params.shuiguoName != null and params.shuiguoName != 'null' ">
+                and a.shuiguo_name like CONCAT('%',#{params.shuiguoName},'%')
+            </if>
+            <if test=" params.shuiguoUuidNumber != '' and params.shuiguoUuidNumber != null and params.shuiguoUuidNumber != 'null' ">
+                and a.shuiguo_uuid_number like CONCAT('%',#{params.shuiguoUuidNumber},'%')
+            </if>
+            <if test="params.shuiguoTypes != null and params.shuiguoTypes != ''">
+                and a.shuiguo_types = #{params.shuiguoTypes}
+            </if>
+            <if test="params.shuiguoErjiTypes != null and params.shuiguoErjiTypes != ''">
+                and a.shuiguo_erji_types = #{params.shuiguoErjiTypes}
+            </if>
+            <if test="params.tuijianTypes != null and params.tuijianTypes != ''">
+                and a.tuijian_types = #{params.tuijianTypes}
+            </if>
+            <if test="params.tejiaTypes != null and params.tejiaTypes != ''">
+                and a.tejia_types = #{params.tejiaTypes}
+            </if>
+            <if test="params.jinkouTypes != null and params.jinkouTypes != ''">
+                and a.jinkou_types = #{params.jinkouTypes}
+            </if>
+            <if test="params.shuiguoKucunNumberStart != null and params.shuiguoKucunNumberStart != ''">
+                <![CDATA[  and a.shuiguo_kucun_number >= #{params.shuiguoKucunNumberStart}   ]]>
+            </if>
+            <if test="params.shuiguoKucunNumberEnd != null and params.shuiguoKucunNumberEnd != ''">
+                <![CDATA[  and a.shuiguo_kucun_number <= #{params.shuiguoKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.shuiguoKucunNumber != null and params.shuiguoKucunNumber != ''">
+                and a.shuiguo_kucun_number = #{params.shuiguoKucunNumber}
+             </if>
+            <if test="params.shuiguoOldMoneyStart != null ">
+                <![CDATA[  and a.shuiguo_old_money >= #{params.shuiguoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.shuiguoOldMoneyEnd != null ">
+                <![CDATA[  and a.shuiguo_old_money <= #{params.shuiguoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.shuiguoNewMoneyStart != null ">
+                <![CDATA[  and a.shuiguo_new_money >= #{params.shuiguoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.shuiguoNewMoneyEnd != null ">
+                <![CDATA[  and a.shuiguo_new_money <= #{params.shuiguoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.shuiguoClicknumStart != null and params.shuiguoClicknumStart != ''">
+                <![CDATA[  and a.shuiguo_clicknum >= #{params.shuiguoClicknumStart}   ]]>
+            </if>
+            <if test="params.shuiguoClicknumEnd != null and params.shuiguoClicknumEnd != ''">
+                <![CDATA[  and a.shuiguo_clicknum <= #{params.shuiguoClicknumEnd}   ]]>
+            </if>
+             <if test="params.shuiguoClicknum != null and params.shuiguoClicknum != ''">
+                and a.shuiguo_clicknum = #{params.shuiguoClicknum}
+             </if>
+            <if test=" params.shuiguoContent != '' and params.shuiguoContent != null and params.shuiguoContent != 'null' ">
+                and a.shuiguo_content like CONCAT('%',#{params.shuiguoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.shuiguoDeleteStart != null and params.shuiguoDeleteStart != ''">
+                <![CDATA[  and a.shuiguo_delete >= #{params.shuiguoDeleteStart}   ]]>
+            </if>
+            <if test="params.shuiguoDeleteEnd != null and params.shuiguoDeleteEnd != ''">
+                <![CDATA[  and a.shuiguo_delete <= #{params.shuiguoDeleteEnd}   ]]>
+            </if>
+             <if test="params.shuiguoDelete != null and params.shuiguoDelete != ''">
+                and a.shuiguo_delete = #{params.shuiguoDelete}
+             </if>
+
+                <!-- 判断商家的id不为空 -->
+            <if test=" params.shangjiaIdNotNull != '' and params.shangjiaIdNotNull != null and params.shangjiaIdNotNull != 'null' ">
+                and a.shangjia_id IS NOT NULL
+            </if>
+            <if test=" params.shangjiaName != '' and params.shangjiaName != null and params.shangjiaName != 'null' ">
+                and shangjia.shangjia_name like CONCAT('%',#{params.shangjiaName},'%')
+            </if>
+            <if test=" params.shangjiaPhone != '' and params.shangjiaPhone != null and params.shangjiaPhone != 'null' ">
+                and shangjia.shangjia_phone like CONCAT('%',#{params.shangjiaPhone},'%')
+            </if>
+            <if test=" params.shangjiaEmail != '' and params.shangjiaEmail != null and params.shangjiaEmail != 'null' ">
+                and shangjia.shangjia_email like CONCAT('%',#{params.shangjiaEmail},'%')
+            </if>
+            <if test="params.shangjiaXingjiTypes != null  and params.shangjiaXingjiTypes != ''">
+                and shangjia.shangjia_xingji_types = #{params.shangjiaXingjiTypes}
+            </if>
+
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and shangjia.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and shangjia.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test=" params.shangjiaContent != '' and params.shangjiaContent != null and params.shangjiaContent != 'null' ">
+                and shangjia.shangjia_content like CONCAT('%',#{params.shangjiaContent},'%')
+            </if>
+            <if test="params.shangjiaYesnoTypes != null  and params.shangjiaYesnoTypes != ''">
+                and shangjia.shangjia_yesno_types = #{params.shangjiaYesnoTypes}
+            </if>
+
+            <if test=" params.shangjiaYesnoText != '' and params.shangjiaYesnoText != null and params.shangjiaYesnoText != 'null' ">
+                and shangjia.shangjia_yesno_text like CONCAT('%',#{params.shangjiaYesnoText},'%')
+            </if>
+            <if test=" params.shangjiaShenheTimeStart != '' and params.shangjiaShenheTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(shangjia.shangjia_shenhe_time) >= UNIX_TIMESTAMP(#{params.shangjiaShenheTimeStart}) ]]>
+            </if>
+            <if test=" params.shangjiaShenheTimeEnd != '' and params.shangjiaShenheTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(shangjia.shangjia_shenhe_time) <= UNIX_TIMESTAMP(#{params.shangjiaShenheTimeEnd}) ]]>
+            </if>
+            <if test="params.shangjiaDeleteStart != null  and params.shangjiaDeleteStart != '' ">
+                <![CDATA[  and shangjia.shangjia_delete >= #{params.shangjiaDeleteStart}   ]]>
+            </if>
+            <if test="params.shangjiaDeleteEnd != null  and params.shangjiaDeleteEnd != '' ">
+                <![CDATA[  and shangjia.shangjia_delete <= #{params.shangjiaDeleteEnd}   ]]>
+            </if>
+            <if test="params.shangjiaDelete != null  and params.shangjiaDelete != '' ">
+                and shangjia.shangjia_delete = #{params.shangjiaDelete}
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
